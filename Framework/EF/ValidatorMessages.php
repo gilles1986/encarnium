@@ -16,11 +16,11 @@
  * @since        2008-11-21
  * @author       Username <yourEmail@adress.de>
  *
- * @version      SVN: $Id: ValidatorMessages.php 353 2012-10-19 00:41:28Z g.meyer $
- * @filesource   $HeadURL: http://svn.babiel.com/Sandbox/trunk/Projekte/PWTool/Packages/Framework/EF/ValidatorMessages.php $
+ *
+ *
  * @revision     $Revision: 353 $
  * @modifiedby   $Author: g.meyer $
- * @lastmodified $Date: 2012-10-19 02:41:28 +0200 (Fr, 19 Okt 2012) $
+ *
  */
 
 declare(ENCODING = 'utf-8');
@@ -31,8 +31,10 @@ namespace Framework\EF;
  *
  * @desc		
  * @internal     
- * @version     Versionsnummer 1.0
+ *
  */
+use Framework\Logger;
+
 class ValidatorMessages {
 	
 	/**
@@ -82,6 +84,7 @@ class ValidatorMessages {
 	private function getValidatorName($validator) {
 	  $valName = strrev($validator);
 	  $pos = strPos( $valName, "\\");
+    Logger::debug(strrev(substr($valName, 0, $pos)),"Test1");
 	  return strrev(substr($valName, 0, $pos));
 	}
 	
@@ -91,9 +94,14 @@ class ValidatorMessages {
 	 * $fieldName -> Den Feld Namen
 	 * $args -> Argumente
 	 */
-	public function addError($validator, $fieldName, $args) {
+	public function addError($validator, $fieldName, $args, $forcename=false) {
 		//Holt die Fehlermeldung für den Validator
+    if($forcename) {
+      $valName = $validator;
+    } else {
       $valName = $this->getValidatorName($validator);
+    }
+
 	  if(isset($this->configMessages[$valName])){
 			$this->errorMessage = $this->configMessages[$valName];
 			

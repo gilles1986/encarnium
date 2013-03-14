@@ -10,11 +10,14 @@ require_once realpath(dirname(__FILE__).'/../Framework/EF/Core.php');
 // Konstanten definieren
 \Framework\EF\Core::setConstants();
 
+require_once CONFIG."/application_options.php";
+require_once CLASSES."/EF/config.php";
+
 //@todo wird noch nicht eigenständig geladen
 //include_once SMARTY_PLUGINS."block.translate.php";
 
 // Core laden starten
-$application = new \Framework\EF\Core();
+$application = new \Framework\EF\Core($app_config ,$options);
 $application->run();
 
 

@@ -16,11 +16,11 @@
  * @since        2008-11-21
  * @author       Username <yourEmail@adress.de>
  *
- * @version      SVN: $Id: JSClassIncluder.php 353 2012-10-19 00:41:28Z g.meyer $
- * @filesource   $HeadURL: http://svn.babiel.com/Sandbox/trunk/Projekte/PWTool/Packages/Framework/Logic/Utils/JSClassIncluder.php $
+ *
+ *
  * @revision     $Revision: 353 $
  * @modifiedby   $Author: g.meyer $
- * @lastmodified $Date: 2012-10-19 02:41:28 +0200 (Fr, 19 Okt 2012) $
+ *
  */
 declare(ENCODING = 'utf-8');
 namespace Framework\Logic\Utils;
@@ -31,7 +31,7 @@ namespace Framework\Logic\Utils;
  * Bindet den JSClassIncluder ein
  *
  * @internal     
- * @version		Versionsnummer 1.0
+ *
  * @package		Framework
  * @subpackage	Controller
  */

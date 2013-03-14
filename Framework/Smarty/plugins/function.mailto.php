@@ -41,7 +41,7 @@
  *
  * @link http://www.smarty.net/manual/en/language.function.mailto.php {mailto}
  *          (Smarty online manual)
- * @version 1.2
+ *
  * @author Monte Ohrt <monte at ohrt dot com>
  * @author credits to Jason Sweat (added cc, bcc and subject functionality)
  * @param array                    $params   parameters

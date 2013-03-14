@@ -43,7 +43,7 @@ require_once(SMARTY_PLUGINS_DIR . 'shared.make_timestamp.php');
  * 
  * @link http://www.smarty.net/manual/en/language.function.html.select.date.php {html_select_date}
  *      (Smarty online manual)
- * @version 2.0
+ *
  * @author Andrei Zmievski 
  * @author Monte Ohrt <monte at ohrt dot com> 
  * @author Rodney Rehm

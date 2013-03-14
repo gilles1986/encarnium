@@ -16,11 +16,11 @@
  * @since        2008-11-21
  * @author       Username <yourEmail@adress.de>
  *
- * @version      SVN: $Id: Core.php 353 2012-10-19 00:41:28Z g.meyer $
- * @filesource   $HeadURL: http://svn.babiel.com/Sandbox/trunk/Projekte/PWTool/Packages/Framework/EF/Core.php $
+ *
+ *
  * @revision     $Revision: 353 $
  * @modifiedby   $Author: g.meyer $
- * @lastmodified $Date: 2012-10-19 02:41:28 +0200 (Fr, 19 Okt 2012) $
+ *
  */
 
 declare(ENCODING = 'utf-8');
@@ -32,7 +32,7 @@ namespace Framework\EF;
  * Führt automatisch die per REQUEST übergebene action aus
  *
  * @internal     
- * @version		Versionsnummer 1.0
+ *
  * @package		Framework
  * @subpackage	EF
  */
@@ -56,15 +56,24 @@ class Core {
 	 * @var unknown_type
 	 */
 	private $rightSystem;
-	
+
+  /**
+   * @var Application Options
+   */
+  private $options;
+
+  private $app_config;
   
 	/**
 	 * Constructor
 	 * @return void
 	 */
-	public function __construct() {
+	public function __construct($app_config, $options) {
+
 		//ClassLoader initializieren
 		$this->initializeClassLoader();
+    $this->app_config = $app_config;
+    $this->options = \Framework\Logic\Utils\Utility::array_merge_recursive_unique($app_config, $options);;
 		//DebugExceptionHandler initializieren
 		$this->initializeDebugExceptionHandler();			
 		//Logger initializieren
@@ -155,13 +164,21 @@ class Core {
 	 * Lässt die Application ausführen
 	 * @return void
 	 */
-	public function run() {
-				
-		$action = (isset($_REQUEST['action'])) ? $_REQUEST['action'] : 'main';
+	public function run($action=false, $validator=false) {
+		$actionName = isset($this->options['actionName']) ? $this->options['actionName'] : "action" ;
+    if(!$action ) {
+      $action = (isset($_REQUEST[$actionName])) ? $_REQUEST[$actionName] : ((isset($this->options['defaultAction'])) ? $this->options['defaultAction'] : 'main') ;
+    }
+
 \Framework\Logger::debug("run:: Action ist ".$action, "Core");
-		
-		$this->actionController = new \Framework\EF\ActionController($action);
-		
+		if(class_exists("\\Plugins\\ActionController")) {
+      $this->actionController = new \Plugins\ActionController($action, $this->options);
+    } else {
+      $this->actionController = new \Framework\EF\ActionController($action, $this->options);
+    }
+
+
+    $error = false;
 		 $realAction = '';
 		 $actionClassName = null;
 		 try {
@@ -169,27 +186,60 @@ class Core {
 		   $realAction = $action;
 		   $actionClassName = "\\Controller\\".$actionConfig['controller'];
 		 } 
-		 catch(\Framework\Errors\FileNotFound $error) {
-			 $actionClassName = '\\Controller\\FatalError';
+		 catch( \Framework\Errors\FileNotFound $error) {
+       $error = true;
+
 		 } 
 		 catch(\Framework\Errors\ActionNotFoundException $error) {
-		   
-		 }
-		 
-\Framework\Logger::debug("run:: ActionClassName ist ".$actionClassName, "Core");
+       $error = true;
 
-		 if( $actionClassName ) {
-		 	$this->validator = new ValidatorManager($this->actionController->getActionConfig());
+		 }
+
+\Framework\Logger::debug("run:: ActionClassName ist ".$actionClassName, "Core");
+    // Wenn eine Action weitergelietet wurde (z.B. 404)
+    if($validator != false) {
+       $actionClass = new $actionClassName($this->validator, $this->options, $actionConfig['method'], $realAction, $this->app_config);
+       return false;
+     }
+
+		 if( $actionClassName && !$error ) {
+
+      if(class_exists("\\Plugins\\ValidatorManager")) {
+        $this->validator = new \Plugins\ValidatorManager($this->actionController->getActionConfig());
+      } else {
+        $this->validator = new \Framework\EF\ValidatorManager($this->actionController->getActionConfig());
+      }
+
 			$this->validator->validate($action, $_REQUEST);
 			
-			$actionClass = new $actionClassName($this->validator, $actionConfig['method'], $realAction);
+			$actionClass = new $actionClassName($this->validator, $this->options, $actionConfig['method'], $realAction, $this->app_config);
 		 } 
 		 else {
-		  
-		     if(class_exists("\Controller\FatalError")) {
-		       new \Controller\FatalError("actionNotFound",htmlspecialchars($action));  
-		     } else {
-		       echo "<h2>This Action does not exists</h2><p>If you want a custom Error Site please create a FatalError Controller</p>";
+
+       if(class_exists("\\Plugins\\ValidatorManager")) {
+         $this->validator = new \Plugins\ValidatorManager(array(
+           "name" => "404",
+           "displayName" => "Action",
+           "args" => array($action)
+         ), true);
+       } else {
+         $this->validator = new \Framework\EF\ValidatorManager(array(
+           "name" => "404",
+           "displayName" => "Action",
+           "args" => array($action)
+         ), true);
+       }
+		     try {
+           if(class_exists("\\Plugins\\ActionController")) {
+             $actionController =  new \Plugins\ActionController("404", $this->options);
+           } else {
+             $actionController =  new \Framework\EF\ActionController("404", $this->options);
+           }
+           $actionController->getActionConfig();
+           $this->run("404", true);
+
+		     } catch(\Framework\Errors\ActionNotFoundException $e) {
+		       echo "<h2>This Action does not exists</h2><p>If you want a custom Error Site please create an action called 404</p>";
 		     }
 		     		   		   
 		 }

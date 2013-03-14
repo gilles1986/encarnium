@@ -6,7 +6,7 @@ namespace Framework;
  * class LDAP
  *
  * @internal     
- * @version		Versionsnummer 1.0
+ *
  * @subpackage	Models
  */
 

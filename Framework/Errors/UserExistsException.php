@@ -8,7 +8,7 @@ namespace Framework\Errors;
  * 
  * @desc		UserExists Exception
  * @internal    
- * @version		Versionsnummer 1.0
+ *
  */
 class UserExistsException extends Exception {
 

@@ -14,11 +14,11 @@
 * @since        2008-11-21
 * @author       Felix H. <felix@encarnium.de>
 *
-* @version      SVN: $Id: AbstractController.php 363 2012-10-20 08:11:16Z g.meyer $
-* @filesource   $HeadURL: http://svn.babiel.com/Sandbox/trunk/Projekte/PWTool/Packages/Framework/EF/AbstractController.php $
+*
+*
 * @revision     $Revision: 363 $
 * @modifiedby   $Author: g.meyer $
-* @lastmodified $Date: 2012-10-20 10:11:16 +0200 (Sa, 20 Okt 2012) $
+*
 */
 
 declare(ENCODING = 'utf-8');
@@ -99,15 +99,30 @@ abstract class AbstractController {
    * @var \Framework\EF\Smarty	$smarty
    */
   protected $smarty;
+
+  /**
+   * @var Application Options
+   */
+  private $options;
+
+  /**
+   * @var Additional Params
+   */
+  private $params;
+
+  private $app_config;
   
   /**
    * Constructor
    * @param \Framework\EF\ValidatorManager $validator
    */
-  public function __construct(\Framework\EF\ValidatorManager $validator, $action='', $realAction='') {
+  public function __construct(\Framework\EF\ValidatorManagerInterface $validator,$options, $action='', $realAction='', $params=false, $app_config=array()) {
   	//Bindet ExtClasses ein wenn diese vorhanden sind
     $this->__tryLoadExtClasses();
 
+    $this->app_config = $app_config;
+    $this->params = $params;
+    $this->options = $options;
     $this->validator = $validator;
     $this->smarty = new \Framework\EF\Smarty();
     $this->request = $this->getRequest();
@@ -124,7 +139,9 @@ abstract class AbstractController {
     $this->reflectionClass = new \ReflectionClass($this);
   
     $this->realAction = $realAction;
-    
+
+
+
     if($action != '') {
     	$this->action = $action;    	
     }
@@ -168,8 +185,7 @@ abstract class AbstractController {
                 $_REQUEST['extensionError']['extensionClassFailed'] = realpath(CLASSES . $className . '.php');
                 
                 $_REQUEST['action'] = "error404";
-
-                $newRequest = new \Framework\EF\Core();
+                $newRequest = new \Framework\EF\Core($this->options, $this->app_config);
                 $newRequest->run();
                 die();
             }
@@ -226,10 +242,18 @@ abstract class AbstractController {
   public function doAction($action) {
   	\Framework\Logger::debug("run:: Action ist ".$action, "Core");
 		
-		$this->actionController = new \Framework\EF\ActionController($action);
+
+    $this->actionController = new \Framework\EF\ActionController($action, array());
+
+    if(class_exists("\\Plugins\\ActionController")) {
+      $this->actionController = new \Plugins\ActionController($action, array());
+    } else {
+      $this->actionController = new \Framework\EF\ActionController($action, array());
+    }
 		
 		 $realAction = '';
 		 $actionClassName = null;
+     $error = false;
 		 try {
 		   $actionConfig = $this->actionController->getActionConfig();
 		   $realAction = $action;
@@ -237,6 +261,7 @@ abstract class AbstractController {
 		 } 
 		 catch(\Framework\Errors\FileNotFound $error) {
 			 $actionClassName = '\\Controller\\FatalError';
+       $error = true;
 		 } 
 		 catch(\Framework\Errors\ActionNotFoundException $error) {
 		   
@@ -244,14 +269,15 @@ abstract class AbstractController {
 		 
       \Framework\Logger::debug("run:: ActionClassName ist ".$actionClassName, "Core");
 
-		 if( $actionClassName ) {
-		 	$this->validator = new ValidatorManager($this->actionController->getActionConfig());
+		 if( $actionClassName && !$error) {
+
+		 		$this->validator = new ValidatorManager($this->actionController->getActionConfig());
 			$this->validator->validate($action, $_REQUEST);
 			
 			$actionClass = new $actionClassName($this->validator, $actionConfig['method'], $realAction);
 		 } 
 		 else {
-		  
+
 		     if(class_exists("\Controller\FatalError")) {
 		       new \Controller\FatalError("actionNotFound",htmlspecialchars($action));  
 		     } else {
@@ -452,6 +478,41 @@ abstract class AbstractController {
 	{
 	    $this->realAction = $realAction;
 	}
+
+  /**
+   * @param \Framework\EF\Application $options
+   */
+  public function setOptions($options)
+  {
+    $this->options = $options;
+  }
+
+  /**
+   * @return \Framework\EF\Application
+   */
+  public function getOptions()
+  {
+    return $this->options;
+  }
+
+  /**
+   * @param \Framework\EF\Additional $params
+   */
+  public function setParams($params)
+  {
+    $this->params = $params;
+  }
+
+  /**
+   * @return \Framework\EF\Additional
+   */
+  public function getParams()
+  {
+    return $this->params;
+  }
+
+
+
 }
 
 

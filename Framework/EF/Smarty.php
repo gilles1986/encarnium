@@ -14,11 +14,11 @@
 * @since        2008-11-21
 * @author       Gilles Meyer <gilles@encarnium.de>
 *
-* @version      SVN: $Id: Smarty.php 355 2012-10-19 04:32:17Z g.meyer $
-* @filesource   $HeadURL: http://svn.babiel.com/Sandbox/trunk/Projekte/PWTool/Packages/Framework/EF/Smarty.php $
+*
+*
 * @revision     $Revision: 355 $
 * @modifiedby   $Author: g.meyer $
-* @lastmodified $Date: 2012-10-19 06:32:17 +0200 (Fr, 19 Okt 2012) $
+*
 */
 
 declare(ENCODING = 'utf-8');
@@ -29,7 +29,7 @@ namespace Framework\EF;
  * 
  * @desc		Die EF Smarty Klasse ist eine Erweiterung der Smarty Klasse und definiert alle für Smarty wichtigen Ordner.
  * @internal    
- * @version		Versionsnummer 1.0
+ *
  */
 class Smarty extends \Smarty {
 

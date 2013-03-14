@@ -9,7 +9,7 @@ namespace Framework\Logic\Utils;
  * Bindet den CSSIncluder ein
  *
  * @internal     
- * @version		Versionsnummer 1.0
+ *
  * @package		Framework
  * @subpackage	Controller
  */

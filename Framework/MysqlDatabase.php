@@ -16,11 +16,6 @@
  * @since        2008-11-21
  * @author
  *
- * @version      SVN: $Id: MysqlDatabase.php 353 2012-10-19 00:41:28Z g.meyer $
- * @filesource   $HeadURL: http://svn.babiel.com/Sandbox/trunk/Projekte/PWTool/Packages/Framework/MysqlDatabase.php $
- * @revision     $Revision: 353 $
- * @modifiedby   $Author: g.meyer $
- * @lastmodified $Date: 2012-10-19 02:41:28 +0200 (Fr, 19 Okt 2012) $
  */
 
 declare(ENCODING = 'utf-8');
@@ -33,7 +28,7 @@ namespace Framework;
  * verwaltet sie
  *
  * @internal     -
- * @version      0.2
+ *
  */
 class MysqlDatabase {
 

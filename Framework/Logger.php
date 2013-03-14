@@ -30,7 +30,7 @@ class Logger {
    * @param Boolean $sendMail [optional]
    */
   public static function init($configFile = null, $sendMail = false) {
-    self::$config = parse_ini_file(is_readable($configFile) ? $configFile : CONFIG.'\configlogger.ini');
+    self::$config = parse_ini_file(is_readable($configFile) ? $configFile : CONFIG.'/configlogger.ini');
     self::$mail = false;
     
     if($sendMail===true) {
