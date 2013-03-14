@@ -12,6 +12,9 @@ encarnium.iml
 *~
 *.sass-cache
 
+Data/Smarty/compiled/*
+Data/Log/*
+
 # OS or Editor folders
 .DS_Store
 ._*
